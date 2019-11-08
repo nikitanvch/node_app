@@ -12,8 +12,8 @@ router.post('/login', user.login);
 
 router.post('/registration', user.registration);
 
+router.post('/new_list', user.test_token, user.new_list);
+
 router.get('/test-token', user.test_token, user.succsesTest);
 
-
 module.exports = router;
-
