@@ -1,33 +1,65 @@
 var user = require('../models/users');
 var session = require('../models/sessions');
+var list = require('../models/lists');
 
 function login (req, res) {
-    user.findOne({email: req.body.email}, function (err, data) {
-        if (data.pw === MD5(req.body.pw)) {
-            console.log(data._id)
-            var newSession = new session({
-                user_id: data._id,
-                created_at: cur_date(0),
-                updated_at: cur_date(0),
-                expires_in: cur_date(5),
-            });
-            console.log(newSession)
-            newSession.save(function (err, newSession) {
-                res.end(`${newSession._id} session starts ${cur_date(0)}`, 200)
-            });
+    user.findOne({ email: req.body.email }, function (err, data) {
+        if (data) {
+            if (data.pw === MD5(req.body.pw)) {
+                console.log("login")
+                var newSession = new session({
+                    user_id: data._id,
+                    created_at: cur_date(0),
+                    updated_at: cur_date(0),
+                    expires_in: cur_date(600),// 10 min
+                });
+                newSession.save(function (err, newSession) {
+                    res.end(`${newSession._id}`, 200)
+                });
+            } else {
+                console.log("wrong pw")
+                res.end("no", 500)
+            }
         } else {
-            res.end("no", 200)
+            console.log("wrong email")
+            res.end("no", 500)}
+        if (err) {
+            console.log("Something was wrong. Please ty again later")
+            return res.end(`Something was wrong. Please ty again later`, 500)
         }
     });
 };
 
 function registration (req, res) {
-    var newUser = new user({
-        email: req.body.email,
-        pw: MD5(req.body.pw)
+    user.findOne({ email: req.body.email }, function (err, data) {
+        if (data) {
+            return res.end(`account with ${data.email} email already exist`, 500)
+        }
+        if (err) {
+            return res.end(`Something was wrong. Please ty again later`, 500)
+        }
+        var newUser = new user({
+            email: req.body.email,
+            pw: MD5(req.body.pw)
+        });
+        newUser.save(function (err, newUser) {
+            if (err) {
+                return res.end(`Something was wrong. Please ty again later`, 500)
+            }
+            res.end("Registration complete!", 200)
+        });
     });
-    newUser.save(function (err, newUser) {
-        res.end("rerer", 200)
+};
+
+function new_list (req, res) {
+    session.findOne({_id: req.body.session_id }, function (err, data) {
+        var newList = new list({
+            name: req.body.name,
+            user_id: data.user_id,
+        });
+        newList.save(function (err, newList) {
+            res.end("new list created", 200)
+        });
     });
 };
 
@@ -35,6 +67,13 @@ function test_token (req, res, next) {
     session.findOne({_id: req.body.session_id}, function (err, data) {
         if (err) return res.end("token undefine", 503);
         if (new Date() < data.expires_in) {
+            data.updated_at = cur_date(0);
+            data.expires_in = cur_date(600);// 10 min
+
+            data.save(function (err, data) {
+                res.end(`${data._id} session updates ${cur_date(0)}`, 200)
+            });
+
             next();
         } else {
             res.end("token outdated", 500)
@@ -42,7 +81,7 @@ function test_token (req, res, next) {
     });
 }
 
-function succsesTest(req, res) {
+function succsesTest(req, res) {//временно
     res.end('test succses', 200)
 }
 
@@ -116,6 +155,7 @@ function bit_rol(d, _) {
 module.exports = {
     login: login,
     registration: registration,
+    new_list: new_list,
     test_token: test_token,
     succsesTest: succsesTest
 }
