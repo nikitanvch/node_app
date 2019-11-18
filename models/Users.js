@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
@@ -6,6 +6,6 @@ var userSchema = new Schema({
     pw: String,
 });
 
-db = mongoose.createConnection('mongodb://localhost/todo_list', {MongoClient: true});
+db = mongoose.createConnection("mongodb://localhost/todo_list", {MongoClient: true});
 user = db.model("User", userSchema);
 module.exports = user;

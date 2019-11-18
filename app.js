@@ -1,12 +1,6 @@
-var express = require('express'),
+var express = require("express"),
     bodyParser = require("body-parser"),
     app = express();
-
-const readline = require('readline');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); //jsonParser
@@ -24,12 +18,12 @@ function status400(req,res,next) {
 app.use(status400);
 
 var port = process.env.PORT || 3000;
-require('./config')(app);
+require("./config")(app);
 
 function startServer() {
-    app.set('port', port);
-    var server = app.listen(app.get('port'), function () {
-        console.log('Express server listening on port ' + server.address().port);
+    app.set("port", port);
+    var server = app.listen(app.get("port"), function () {
+        console.log("Express server listening on port " + server.address().port);
     });
 }
 
