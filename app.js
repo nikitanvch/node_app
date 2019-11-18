@@ -1,6 +1,5 @@
 var express = require('express'),
     bodyParser = require("body-parser"),
-    jsonParser = bodyParser.json(), //?
     app = express();
 
 const readline = require('readline');
@@ -17,20 +16,6 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-//#region Access-Control-Allow-Origin
-// app.options("/*", function(req, res, next) {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-//     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-//     res.sendStatus(200);
-// });
-
-// app.all('*', function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     next();
-// });
-//#endregion
 
 function status400(req,res,next) {
     if (!req.body) res.sendStatus(400);
