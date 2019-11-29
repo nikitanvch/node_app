@@ -1,5 +1,5 @@
 module.exports = function (app) {
-    var path = require("path"),
+    let path = require("path"),
         express = require("express"),
         mongoose = require("mongoose"),
         routes = require("./routes/index"),
@@ -11,7 +11,7 @@ module.exports = function (app) {
     app.use("/users", users);
 
     app.use(function (req, res, next) {
-        var err = new Error("Not Found");
+        let err = new Error("Not Found");
         err.status = 404;
         next(err);
     });

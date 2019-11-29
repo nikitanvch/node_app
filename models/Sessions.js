@@ -1,7 +1,7 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+let mongoose = require("mongoose");
+let Schema = mongoose.Schema;
 
-var sessionSchema = new Schema({
+let sessionSchema = new Schema({
     user_id: { type: Schema.Types.ObjectId, ref: "Users", index: true},
     created_at: Date,
     updated_at: Date,

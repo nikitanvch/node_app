@@ -1,8 +1,8 @@
-var User = require("../models/Users");
-var Session = require("../models/Sessions");
-var List = require("../models/Lists");
+let User = require("../models/Users");
+let Session = require("../models/Sessions");
+let List = require("../models/Lists");
 
-var bcrypt = require("bcrypt");
+let bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 
@@ -25,39 +25,56 @@ function login (req, res) {
                     });
                 } else {
                     console.log("wrong pw");
-                    res.end("no", 500)
+                    res.status(500).json({
+                        "error": "Wrong pw"
+                    })
                 }
             });
         } else {
             console.log("wrong email");
-            res.end("no", 500)}
+            res.status(500).json({
+                error: "Wrong email"
+            })
+        }
         if (err) {
             console.log("Something was wrong. Please ty again later");
-            return res.end("Something was wrong. Please ty again later", 500)
+            return res.status(500).json({
+                "error": "Something was wrong. Please ty again later"
+            })
         }
     });
 };
 
-function registration (req, res) {
+const registration =  async (req, res) => {
+    // let  CurrentUser = await  User.findOne({ email: req.body.email });
+    // console.log(CurrentUser)
     User.findOne({ email: req.body.email }, function (err, data) {
         if (data) {
-            return res.end(`account with ${data.email} email already exist`, 500)
+            return res.status(500).json({
+                "message": `account with ${data.email} email already exist`
+            })
         }
         if (err) {
-            return res.end("Something was wrong. Please ty again later", 500)
+            return res.status(500).json({
+                "message": "Something was wrong. Please ty again later"
+            })
         }
 
         bcrypt.hash(req.body.pw, saltRounds, function(err, hash) {
-            var newUser = new User({
+            let newUser = new User({
                 email: req.body.email,
                 pw: hash,
             });
 
             newUser.save(function (err, newUser) {
                 if (err) {
-                    return res.end("Something was wrong. Please ty again later", 500)
+                    return res.status(500).json({
+                        "message": "Something was wrong. Please ty again later"
+                    })
                 }
-                res.end("Registration complete!", 200)
+                res.status(200).json({
+                    "message": "Registration complete!"
+                })
             });
         });
     });
@@ -65,12 +82,26 @@ function registration (req, res) {
 
 function newList (req, res) {
     Session.findOne({_id: req.body.session_id }, function (err, data) {
-        var newList = new List({
+        if (err) {
+            return res.status(500).json({
+                "message": "Something was wrong. Please ty again later"
+            })
+        }
+
+        let newList = new List({
             name: req.body.name,
             user_id: data.user_id,
         });
+
         newList.save(function (err, newList) {
-            res.end("new list created", 200)
+            if (err) {
+                return res.status(500).json({
+                    "message": "Something was wrong. Please ty again later"
+                })
+            }
+            res.status(200).json({
+                "message": "New list created"
+            })
         });
     });
 };
@@ -86,7 +117,7 @@ function testToken (req, res, next) {
                 res.end(`${data._id} session updates ${curDate(0)}`, 200)
             });
 
-            next();
+            next(data.user_id);
         } else {
             res.end("token outdated", 500)
         }
@@ -94,7 +125,7 @@ function testToken (req, res, next) {
 }
 
 function curDate(sec) {
-    var date = new Date();
+    let date = new Date();
     date.setSeconds(date.getSeconds() + sec);
     return date
 }

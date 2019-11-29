@@ -1,9 +1,9 @@
-var express = require("express");
-var cors = require("cors");
-var app = express();
-var router = express.Router();
+let express = require("express");
+let cors = require("cors");
+let app = express();
+let router = express.Router();
 
-var user = require("../controllers/users");
+let user = require("../controllers/users");
 
 app.use(cors());
 /* GET users listing. */
