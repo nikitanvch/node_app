@@ -17,7 +17,7 @@ function status400(req,res,next) {
 }
 app.use(status400);
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 2500;
 require("./config")(app);
 
 function startServer() {

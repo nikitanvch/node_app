@@ -76,9 +76,18 @@ const registration = async (req, res) => {
                             "message": "Something was wrong. Please ty again later"
                         })
                     }
-                    res.status(200).json({
-                        "message": "Registration complete!"
-                    })
+                    console.log("registration");
+                    let newSession = new Session({
+                        user_id: newUser._id,
+                        created_at: curDate(0),
+                        updated_at: curDate(0),
+                        expires_in: curDate(600),// 10 min
+                    });
+                    newSession.save(function (err, newSession) {
+                        res.status(200).json({
+                            "sessionId": `${newSession._id}`,
+                        })
+                    });
                 });
             });
         }
